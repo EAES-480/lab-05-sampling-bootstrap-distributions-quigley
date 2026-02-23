@@ -140,14 +140,14 @@ pop <- df %>%
     names_sep = "__",
     values_to = "value"
   ) %>%   
-  pivot_wider(names_from = ___, values_from = ___)       # TODO: pivot_wider
+  pivot_wider(names_from = "stat", values_from = "value")       # TODO: pivot_wider
 
 pop
 ```
 
 **Prompt (2–3 sentences):** Which variable has the largest population SD? What does that imply about the variability of that process?
 
-> *Write your answer here.*
+> *It seems like latent heat has the highest standard deviation, which might imply that the value for latent heat can vary more drastically. this might make sense because latent heat can change depending on time of day.*
 
 ---
 
@@ -175,10 +175,10 @@ Return a tibble with columns: `var`, `sample_mean`, `pop_mean`, `rel_error_pct`.
 ```{r one_sample_relerr, echo=TRUE, eval=FALSE}
 # GOAL: Relative error for point estimates from one random sample.
 
-set.seed(___)
-n_samp <- ___
+set.seed(1010101)
+n_samp <- 1000
 
-samp <- ___
+samp <- df %>% slice_sample(n = n_samp)
 
 # get mean point estimate for each variable
 est <- samp %>%
