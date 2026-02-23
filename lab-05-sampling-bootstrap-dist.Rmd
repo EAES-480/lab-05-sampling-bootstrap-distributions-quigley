@@ -1,6 +1,6 @@
 ---
 title: "Lab 05 — Sampling and Bootstrap Distributions"
-author: "EAES 480 — Modern Statistics in Earth & Environmental Science"
+author: "Louis Quigley"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output:
   html_document:
@@ -19,6 +19,7 @@ editor_options:
 library(tidyverse)
 library(lubridate)
 library(janitor)
+library(dplyr)
 
 knitr::opts_chunk$set(
   warning = FALSE,
@@ -58,9 +59,9 @@ Complete the pipeline so `df` is a clean tibble. Filter for 2023, and replace fi
 # GOAL: Read the CSV from the repo and clean column names.
 # TODO: finish this pipeline.
 
-df <- read_csv("data/us-ams-simple.csv", na = c("____")) %>%
-  ___ %>%
-  ___
+df <- read_csv("data/us-ams-simple.csv", na = c("-9999")) %>%
+  clean_names() %>%
+  filter(year_local == 2023)
 
 glimpse(df)
 ```
@@ -80,10 +81,10 @@ df <- df %>%
  mutate(
     # TODO: create a Date column from year_local and doy
     # HINT: Jan 1 is DOY = 1, so use (doy - 1) with origin = "YYYY-01-01"
-    date = as.Date(___ - 1, origin = paste0(___, "-01-01")),
+    date = as.Date(doy - 1, origin = paste0(2023, "-01-01")),
 
     # TODO: create a month column (numeric 1–12 or labeled months)
-    month = month(___, label = TRUE, abbr = TRUE),
+    month = month(1, label = TRUE, abbr = TRUE),
 
     # TODO: make a day/night label using daytime (0/1)
     day_night = if_else(daytime == 1, "Day", "Night")
@@ -103,9 +104,9 @@ Pick **2–3 variables** to analyze. Include at least **one flux** variable (e.g
 
 ```{r choose_vars, echo=TRUE, eval=FALSE}
 vars <- c(
-  ___,  # e.g., "fc"
-  ___,  # e.g., "ta"
-  ___   # optional third variable
+  "swc",  # e.g., "fc"
+  "ta",  # e.g., "ta"
+  "le"   # optional third variable
 )
 
 # CHECK: confirm these columns exist (should return character(0))
