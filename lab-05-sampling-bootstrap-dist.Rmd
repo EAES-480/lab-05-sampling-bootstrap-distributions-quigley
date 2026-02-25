@@ -81,10 +81,10 @@ df <- df %>%
  mutate(
     # TODO: create a Date column from year_local and doy
     # HINT: Jan 1 is DOY = 1, so use (doy - 1) with origin = "YYYY-01-01"
-    date = as.Date(doy - 1, origin = paste0(2023, "-01-01")),
+    date = as.Date(doy - 1, origin = paste0(year_local, "-01-01")),
 
     # TODO: create a month column (numeric 1–12 or labeled months)
-    month = month(1, label = TRUE, abbr = TRUE),
+    month = month(date, label = TRUE, abbr = TRUE),
 
     # TODO: make a day/night label using daytime (0/1)
     day_night = if_else(daytime == 1, "Day", "Night")
@@ -175,20 +175,20 @@ Return a tibble with columns: `var`, `sample_mean`, `pop_mean`, `rel_error_pct`.
 ```{r one_sample_relerr, echo=TRUE, eval=FALSE}
 # GOAL: Relative error for point estimates from one random sample.
 
-set.seed(1010101)
+set.seed(1337)
 n_samp <- 1000
 
 samp <- df %>% slice_sample(n = n_samp)
 
 # get mean point estimate for each variable
 est <- samp %>%
-  summarise(across(all_of(___), ~mean(.x, na.rm = ___))) %>%
+  summarise(across(all_of(vars), ~mean(.x, na.rm = T))) %>%
   pivot_longer(everything(), names_to = "var", values_to = "sample_mean")
 
 # compute the relative error for each variable
 relerr <- est %>%
   left_join(pop %>% select(var, pop_mean = mean), by = "var") %>%
-  mutate(rel_error_pct = 100 * abs(___ - ___) / abs(___)) %>%
+  mutate(rel_error_pct = 100 * abs(pop_mean - sample_mean) / abs(pop_mean)) %>%
   arrange(desc(rel_error_pct))
 
 relerr
@@ -206,12 +206,12 @@ Give a scientific reason why some variables are harder to estimate from a small 
 We will focus on **one variable** and simulate many repeated studies. The next code chunk is doing quite a lot. Please review the #comments throughout and check you understand generally what each section is doing.
 
 ```{r relerr_by_n, echo=TRUE, eval=FALSE}
-set.seed(480)
+set.seed(1337)
 
-n_grid <- c(___, ___, ___, ___)   # e.g., c(25, 100, 300, 1000)
-reps <- ___                        # e.g., 500 or 1000
+n_grid <- c(25, 100, 300, 1000)   # e.g., c(25, 100, 300, 1000)
+reps <- 1000                        # e.g., 500 or 1000
 
-target_var <- "___"                # e.g., "fch4" or "fc"
+target_var <- "le"                # e.g., "fch4" or "fc"
 
 # Pull the population vector (remove missing values once, up front)
 x_pop <- df[[target_var]]
@@ -237,7 +237,7 @@ for (i in seq_along(n_grid)) {
     x_samp <- sample(x_pop, size = n_samp, replace = FALSE)
     xbar <- mean(x_samp)
 
-    relerrs[j] <- 100 * abs(pop_mean_target - ___) / abs(pop_mean_target)
+    relerrs[j] <- 100 * abs(pop_mean_target - xbar) / abs(pop_mean_target)
   }
 
   sim_list[[i]] <- tibble(
@@ -263,10 +263,27 @@ sim_relerr
 # GOAL: Summarize and plot the relationship between n and relative error.
 # TODO: write your own code.
 
-summary_relerr <- ___
+summary_relerr <- sim_relerr %>%
+  group_by(n) %>%
+    summarise(
+      median_relerr=median(rel_error_pct),
+      p90_relerr=quantile(rel_error_pct, 0.9)
+    )
 summary_relerr
 
-p_relerr <- ___
+p_relerr <- summary_relerr %>%
+  ggplot(aes(x=n)) +
+  geom_line(aes(y = median_relerr)) +
+  geom_point(aes(y = median_relerr)) +
+  geom_line(aes(y = p90_relerr), linetype = "dashed") +
+  geom_point(aes(y = p90_relerr)) +
+  scale_x_log10() +
+  theme_classic(base_size = 18) +
+  labs(
+    x = "sample size",
+    y= "relative error (%)",
+    title = "relative error vs sample size"
+  )
 p_relerr
 ```
 
@@ -294,12 +311,12 @@ Compute:
 - simulated SD of sample means (over many replications)
 
 ```{r se_compare, echo=TRUE, eval=FALSE}
-set.seed(480)
+set.seed(1337)
 
 # TODO: pick a variable and sample size
-target_var <- ___
-n_samp <- ___
-reps <- ___
+target_var <- "le"
+n_samp <- 100
+reps <- 1000
 
 pop_sd_target <- pop %>% filter(var == target_var) %>% pull(sd)
 pop_mean_target <- pop %>% filter(var == target_var) %>% pull(mean)
@@ -309,8 +326,8 @@ means <- replicate(
   mean(sample(df[[target_var]], size = n_samp, replace = FALSE), na.rm = TRUE)
 )
 
-se_theory <- ___
-se_sim    <- ___
+se_theory <- pop_sd_target/sqrt(n_samp)
+se_sim    <- sd(means)
 
 tibble(
   target_var = target_var,
@@ -325,7 +342,7 @@ tibble(
 ```{r plot_sampling_dist, echo=TRUE, eval=FALSE}
 tibble(mean_est = means) %>%
   ggplot(aes(x = mean_est)) +
-  geom_histogram(bins = ___, alpha = 0.85) +
+  geom_histogram(bins = 20, alpha = 0.85) +
   geom_vline(xintercept = pop_mean_target, linetype = "dashed", linewidth = 1.1) +
   theme_classic(base_size = 18) +
   labs(
@@ -363,20 +380,20 @@ Write code to:
 set.seed(480)
 
 # TODO: choose settings
-target_var <- ___
-n_samp <- ___
-B <- ___
+target_var <- "le"
+n_samp <- 100
+B <- 10000
 
 # one "field campaign" sample
 samp <- tibble(x = sample(x_pop, size = n_samp, replace = FALSE))
 
 # bootstrap sampling of the mean
 boot_means <- replicate(
-  ___,
-  mean(sample(samp$x, size = ___, replace = TRUE))
+  B,
+  mean(sample(samp$x, size = n_samp, replace = TRUE))
 )
 
-boot_sd <- sd(___)
+boot_sd <- sd(boot_means)
 
 tibble(
   sample_mean = mean(samp$x),
@@ -386,7 +403,17 @@ tibble(
 
 ```{r plot_boot, echo=TRUE, eval=FALSE}
 # TODO: plot boot_means and mark the sample mean
-___
+tibble(boot_mean = boot_means) %>%
+  ggplot(aes(x = boot_mean)) +
+  geom_histogram(bins = 40, alpha = 0.85) +
+  geom_vline(xintercept = mean(samp$x), linetype = "dashed", linewidth = 1.1) +
+  theme_classic(base_size = 18) +
+  labs(
+    x = "bootstrap mean",
+    y = "count",
+    title = "bootstrap distribution of the mean"
+    
+
 ```
 
 **Prompt (4–6 sentences):** Compare the bootstrap distribution to the sampling distribution from Part III.  
