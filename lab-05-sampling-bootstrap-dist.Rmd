@@ -147,7 +147,7 @@ pop
 
 **Prompt (2–3 sentences):** Which variable has the largest population SD? What does that imply about the variability of that process?
 
-> *It seems like latent heat has the highest standard deviation, which might imply that the value for latent heat can vary more drastically. this might make sense because latent heat can change depending on time of day.*
+> *It seems like latent heat has the highest standard deviation, which might imply that the value for latent heat can vary more drastically. This might make sense because latent heat can change depending on time of day.*
 
 ---
 
@@ -170,7 +170,7 @@ Write code to:
 5. join to population means from `pop`
 6. compute `rel_error_pct` for each variable
 
-Return a tibble with columns: `var`, `sample_mean`, `pop_mean`, `rel_error_pct`.
+Return a tibble with columns: `var`, `sample_mean`, `pop_mean`, `rel_error_pct`. 
 
 ```{r one_sample_relerr, echo=TRUE, eval=FALSE}
 # GOAL: Relative error for point estimates from one random sample.
@@ -197,7 +197,7 @@ relerr
 **Prompt (3–4 sentences):** Which variable had the largest relative error at your chosen `n_samp`?  
 Give a scientific reason why some variables are harder to estimate from a small sample.
 
-> *Write your answer here.*
+> *Latent heat had the largest relative error. Smaller samples are harder to estimate because they can have higher sampling variability and miss the distribution of the population. Additionally, it may be difficult to estimate latent heat because it can have high variability and skew when compared to air temperature and soil water content. *
 
 ---
 
@@ -208,7 +208,7 @@ We will focus on **one variable** and simulate many repeated studies. The next c
 ```{r relerr_by_n, echo=TRUE, eval=FALSE}
 set.seed(1337)
 
-n_grid <- c(25, 100, 300, 1000)   # e.g., c(25, 100, 300, 1000)
+n_grid <- c(30, 100, 300, 1000)   # e.g., c(25, 100, 300, 1000)
 reps <- 1000                        # e.g., 500 or 1000
 
 target_var <- "le"                # e.g., "fch4" or "fc"
@@ -290,7 +290,7 @@ p_relerr
 **Prompt (3–4 sentences):** Describe the pattern. Is improvement from n=25→100 larger than 300→1000?  
 Why does accuracy show “diminishing returns” as n increases?
 
-> *Write your answer here.*
+> *Using too small a sample size does drastically increase the relative error as shown in the figure. However as the number of samples increases, it better represents the underlying population. This improvement shows diminishing returns, which means there is less improvement in accuracy as the number of samples goes up. Practically, this means that choosing a small sample size is introduces much error, but after enough samples are chosen, choosing addiitonal samples improves the accuracy little. *
 
 ---
 
@@ -315,7 +315,7 @@ set.seed(1337)
 
 # TODO: pick a variable and sample size
 target_var <- "le"
-n_samp <- 100
+n_samp <- 1000
 reps <- 1000
 
 pop_sd_target <- pop %>% filter(var == target_var) %>% pull(sd)
@@ -356,7 +356,7 @@ tibble(mean_est = means) %>%
 **Prompt (3–5 sentences):** How close were `se_theory` and `se_simulated`?  
 What changes if you increase `n_samp` vs increase `reps`?
 
-> *Write your answer here.*
+> *The standard error was pretty close at 7.81 compared to the theoretical standard error of 8.06. I chose a sample size of 100 with 1000, which might have been a pretty good estimate. Increasing the number of reps didn't change the distribution shape much, but the standard error became 8.05, which almost perfectly captures the theoretical. In contrast, increasing the number of samples to 1000 reduced the theoretical standard error to 2.55, while the simulated standard error was a little off at 2.49. *
 
 ---
 
