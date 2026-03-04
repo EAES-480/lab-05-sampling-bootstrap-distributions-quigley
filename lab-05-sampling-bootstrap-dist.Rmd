@@ -55,7 +55,7 @@ Use slides + past labs + Discord as needed, but make sure your final code is **y
 
 Complete the pipeline so `df` is a clean tibble. Filter for 2023, and replace fill values (-9999) with na.
 
-```{r load_data, echo=TRUE, eval=FALSE}
+```{r load_data, echo=TRUE, eval=T}
 # GOAL: Read the CSV from the repo and clean column names.
 # TODO: finish this pipeline.
 
@@ -73,7 +73,7 @@ Write code to add:
 - `month` as labeled abbreviated month (Jan–Dec)
 - `day_night` as "Day"/"Night" from `daytime` (0/1)
 
-```{r derive_time, echo=TRUE, eval=FALSE}
+```{r derive_time, echo=TRUE, eval=T}
 # GOAL: Create date/month/day_night columns.
 # HINT: DOY is 1-indexed, so use (doy - 1) with origin "YYYY-01-01".
 
