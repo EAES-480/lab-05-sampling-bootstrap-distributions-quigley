@@ -121,7 +121,7 @@ Complete the code to compute **population mean** and **population SD** for each 
 
 Your output should be a tibble named `pop` with columns: `var`, `mean`, `sd`.
 
-```{r pop_params, echo=TRUE, eval=FALSE}
+```{r pop_params, echo=TRUE, eval=T}
 # GOAL: Create a tidy table of population parameters for vars.
 # TODO: complete this pipeline.
 
@@ -172,7 +172,7 @@ Write code to:
 
 Return a tibble with columns: `var`, `sample_mean`, `pop_mean`, `rel_error_pct`. 
 
-```{r one_sample_relerr, echo=TRUE, eval=FALSE}
+```{r one_sample_relerr, echo=TRUE, eval=T}
 # GOAL: Relative error for point estimates from one random sample.
 
 set.seed(1337)
@@ -205,7 +205,7 @@ Give a scientific reason why some variables are harder to estimate from a small 
 
 We will focus on **one variable** and simulate many repeated studies. The next code chunk is doing quite a lot. Please review the #comments throughout and check you understand generally what each section is doing.
 
-```{r relerr_by_n, echo=TRUE, eval=FALSE}
+```{r relerr_by_n, echo=TRUE, eval=T}
 set.seed(1337)
 
 n_grid <- c(30, 100, 300, 1000)   # e.g., c(25, 100, 300, 1000)
@@ -259,7 +259,7 @@ sim_relerr
 
 2) Make a plot that communicates “relative error decreases with n”.
 
-```{r summarize_plot_relerr, echo=TRUE, eval=FALSE}
+```{r summarize_plot_relerr, echo=TRUE, eval=T}
 # GOAL: Summarize and plot the relationship between n and relative error.
 # TODO: write your own code.
 
@@ -310,7 +310,7 @@ Compute:
 - theoretical SE
 - simulated SD of sample means (over many replications)
 
-```{r se_compare, echo=TRUE, eval=FALSE}
+```{r se_compare, echo=TRUE, eval=T}
 set.seed(1337)
 
 # TODO: pick a variable and sample size
@@ -339,7 +339,7 @@ tibble(
 
 ### Plot the sampling distribution (fill-in)
 
-```{r plot_sampling_dist, echo=TRUE, eval=FALSE}
+```{r plot_sampling_dist, echo=TRUE, eval=T}
 tibble(mean_est = means) %>%
   ggplot(aes(x = mean_est)) +
   geom_histogram(bins = 20, alpha = 0.85) +
@@ -376,7 +376,7 @@ Write code to:
 - compute bootstrap SD
 - plot the bootstrap distribution
 
-```{r bootstrap_mean, echo=TRUE, eval=FALSE}
+```{r bootstrap_mean, echo=TRUE, eval=T}
 set.seed(480)
 
 # TODO: choose settings
@@ -401,7 +401,7 @@ tibble(
 )
 ```
 
-```{r plot_boot, echo=TRUE, eval=FALSE}
+```{r plot_boot, echo=TRUE, eval=T}
 # TODO: plot boot_means and mark the sample mean
 tibble(boot_mean = boot_means) %>%
   ggplot(aes(x = boot_mean)) +
@@ -439,7 +439,7 @@ We will focus on **soil water content (`swc`)**.
 
 ## Preparation (recommended)
 
-```{r part2_prep, echo=TRUE, eval=FALSE}
+```{r part2_prep, echo=TRUE, eval=T}
 # GOAL: Ensure df exists (loaded in Part I) and create a clean SWC population vector.
 
 swc_pop <- df$swc
@@ -554,7 +554,7 @@ tibble(
 )
 ```
 
-```{r ex2_plot_summer_boot, echo=TRUE, eval=FALSE}
+```{r ex2_plot_summer_boot, echo=TRUE, eval=T}
 # GOAL: Plot summer bootstrap and compare to population mean.
 
 tibble(boot_mean = boot_means_summer) %>%
@@ -674,13 +674,13 @@ A 95% bootstrap confidence interval can be estimated using the **2.5% and 97.5% 
 
 Using the **random SWC sample from earlier**, compute a **95% bootstrap confidence interval for the mean**.
 
-```{r ex1_boot_ci_mean, echo=TRUE, eval=FALSE}
+```{r ex1_boot_ci_mean, echo=TRUE, eval=T}
 # GOAL: compute the 2.5% and 97.5% quantiles of the bootstrap distribution
 
-quantile(boot_means_random, probs = c(___, ___))
+quantile(boot_means_random, probs = c(0.025, 0.975))
 ```
 
-**Prompt:**
+**Prompt:Yes, the confidence interval contains the value 35.5, which suggests that the sample mean is fairly good. **
 
 Does the confidence interval contain the **true population mean (`pop_mean_swc`)**?  
 What does this tell you about the uncertainty of the estimate?
@@ -691,7 +691,7 @@ What does this tell you about the uncertainty of the estimate?
 
 Modify the bootstrap histogram from Part II so that the **95% CI is shown on the plot**.
 
-```{r ex2_plot_ci, echo=TRUE, eval=FALSE}
+```{r ex2_plot_ci, echo=TRUE, eval=T}
 boot_ci <- quantile(boot_means_random, probs = c(0.025, 0.975))
 
 tibble(boot_mean = boot_means_random) %>%
@@ -702,7 +702,7 @@ tibble(boot_mean = boot_means_random) %>%
   theme_classic(base_size = 18)
 ```
 
-**Prompt:**
+**Prompt: The red vertical lines are the 95% percentile visualized. This gives us a representation of how uncertain the mean is given a reasonable amount from the mean. **
 
 Explain what the **red vertical lines** represent.
 
@@ -723,9 +723,9 @@ Examples:
 - `swc ~ le`
 - `gpp ~ ta`
 
-```{r ex3_fit_model, echo=TRUE, eval=FALSE}
-response_var <- "___"
-predictor_var <- "___"
+```{r ex3_fit_model, echo=TRUE, eval=T}
+response_var <- "swc"
+predictor_var <- "ta"
 
 model <- lm(df[[response_var]] ~ df[[predictor_var]])
 
@@ -734,10 +734,10 @@ coef(model)
 
 ### Bootstrap the regression
 
-```{r ex3_bootstrap_lm, echo=TRUE, eval=FALSE}
+```{r ex3_bootstrap_lm, echo=TRUE, eval=T}
 set.seed(480)
 
-B <- 2000
+B <- 1000
 
 boot_coef <- replicate(B, {
 
@@ -756,12 +756,12 @@ boot_coef <- t(boot_coef)
 
 ### Compute confidence intervals
 
-```{r ex3_ci_params, echo=TRUE, eval=FALSE}
+```{r ex3_ci_params, echo=TRUE, eval=T}
 quantile(boot_coef[,1], probs = c(0.025, 0.975))  # intercept CI
 quantile(boot_coef[,2], probs = c(0.025, 0.975))  # slope CI
 ```
 
-**Prompt:**
+**Prompt:The slope confidence interval is approximately -0.441 and -0.421, which does not include zero. This suggests that there is a statistically meaningful relationship between air temperature and soil water content, which makes sense. Since the relationship is negative, this means that as air temperature increases, soil water content tends to decrease. **
 
 Interpret the slope confidence interval.
 
