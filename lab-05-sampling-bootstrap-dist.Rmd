@@ -102,7 +102,7 @@ df %>% count(day_night)
 
 Pick **2–3 variables** to analyze. Include at least **one flux** variable (e.g., `nee`, `fc`, `gpp`) and optionally one meteorological variable (e.g., `ta`, `le`).
 
-```{r choose_vars, echo=TRUE, eval=FALSE}
+```{r choose_vars, echo=TRUE, eval=T}
 vars <- c(
   "swc",  # e.g., "fc"
   "ta",  # e.g., "ta"
@@ -405,21 +405,21 @@ tibble(
 # TODO: plot boot_means and mark the sample mean
 tibble(boot_mean = boot_means) %>%
   ggplot(aes(x = boot_mean)) +
-  geom_histogram(bins = 40, alpha = 0.85) +
+  geom_histogram(bins = 40, alpha = 0.85, fill="orange", color="black") +
   geom_vline(xintercept = mean(samp$x), linetype = "dashed", linewidth = 1.1) +
   theme_classic(base_size = 18) +
   labs(
     x = "bootstrap mean",
     y = "count",
     title = "bootstrap distribution of the mean"
-    
+  )  
 
 ```
 
 **Prompt (4–6 sentences):** Compare the bootstrap distribution to the sampling distribution from Part III.  
 What is the bootstrap trying to approximate? When is bootstrap especially useful in EAES?
 
-> *Write your answer here.*
+> *The sampling distribution mean was 63.1 whereas the bootstrap distribution mean was 59.7. However, the population mean is 61.5, meaning both distribution means were slightly off. The bootstrap distribution mean is trying to approximate the mean distribution by quantifying uncertainty and estimating standard errors. This is especially useful in EAES when there are limited samples, or there is non-normal sampling distribution*
 
 ---
 
@@ -461,35 +461,35 @@ tibble(
 
 **Task:** Draw a *simple random sample* of `n = 200` from the SWC population, then bootstrap the mean.
 
-```{r ex1_random_bootstrap, echo=TRUE, eval=FALSE}
+```{r ex1_random_bootstrap, echo=TRUE, eval=T}
 set.seed(480)
 
-n_samp <- ___
+n_samp <- 200
 B <- 4000
 
 # 1) Draw a random sample (no replacement) from the population vector
-swc_samp_random <- sample(___, size = n_samp, replace = FALSE)
+swc_samp_random <- sample(swc_pop, size = n_samp, replace = FALSE)
 
 # 2) Bootstrap the mean (resample WITH replacement from the sample)
 boot_means_random <- replicate(
   B,
-  mean(sample(swc_samp_random, size = ___, replace = TRUE))
+  mean(sample(swc_samp_random, size = n_samp, replace = TRUE))
 )
 
 # 3) Summarize
 tibble(
   pop_mean = pop_mean_swc,
-  sample_mean = mean(___),
-  boot_sd = sd(___)
+  sample_mean = mean(boot_means_random),
+  boot_sd = sd(boot_means_random)
 )
 ```
 
-```{r ex1_plot_random_boot, echo=TRUE, eval=FALSE}
+```{r ex1_plot_random_boot, echo=TRUE, eval=T}
 # GOAL: Plot the bootstrap distribution and mark (i) sample mean and (ii) population mean.
 
 tibble(boot_mean = boot_means_random) %>%
   ggplot(aes(x = boot_mean)) +
-  geom_histogram(bins = ___, alpha = 0.85) +
+  geom_histogram(bins = 40, alpha = 0.85) +
   geom_vline(xintercept = mean(swc_samp_random), linetype = "dashed", linewidth = 1.1) +
   geom_vline(xintercept = pop_mean_swc, linetype = "solid", linewidth = 1.1) +
   theme_classic(base_size = 18) +
@@ -504,7 +504,7 @@ tibble(boot_mean = boot_means_random) %>%
 **Prompt (3–4 sentences):** Is the bootstrap distribution centered near the population mean?  
 What does the bootstrap SD represent here?
 
-> *Write your answer here.*
+> *The bootstrap distribution is slightly below the population mean. The bootstrap SD represents the standard error of the sample mean, which represents the precision of our estimated mean given our sample. The sample mean is within the standard deviation of ~0.544 from the population mean, meaning it's a good estimate. *
 
 ---
 
@@ -514,7 +514,7 @@ What does the bootstrap SD represent here?
 
 > This simulates a field campaign that only measured during summer.
 
-```{r ex2_summer_sample, echo=TRUE, eval=FALSE}
+```{r ex2_summer_sample, echo=TRUE, eval=T}
 # GOAL: Build a summer-only pool of SWC observations (Jun–Aug), then sample from that pool.
 
 # TODO: ensure df has a month column.
@@ -522,27 +522,27 @@ What does the bootstrap SD represent here?
 # HINT: month(date, label = TRUE, abbr = TRUE)
 
 df_summer <- df %>%
-  filter(___ %in% c("Jun", "Jul", "Aug")) %>%
-  filter(!is.na(___))
+  filter(month %in% c("Jun", "Jul", "Aug")) %>%
+  filter(!is.na(swc))
 
 swc_summer_pool <- df_summer$swc
 
 length(swc_summer_pool)
 ```
 
-```{r ex2_summer_bootstrap, echo=TRUE, eval=FALSE}
+```{r ex2_summer_bootstrap, echo=TRUE, eval=T}
 set.seed(480)
 
 n_samp <- 200
 B <- 4000
 
 # 1) Draw a summer-only sample
-swc_samp_summer <- sample(___, size = n_samp, replace = FALSE)
+swc_samp_summer <- sample(swc_summer_pool, size = n_samp, replace = FALSE)
 
 # 2) Bootstrap the mean from that sample
-boot_means_summer <- ___(
+boot_means_summer <- replicate(
   B,
-  mean(sample(___, size = n_samp, replace = TRUE))
+  mean(sample(swc_samp_summer, size = n_samp, replace = TRUE))
 )
 
 # 3) Summarize
@@ -559,7 +559,7 @@ tibble(
 
 tibble(boot_mean = boot_means_summer) %>%
   ggplot(aes(x = boot_mean)) +
-  geom_histogram(bins = ___, alpha = 0.85) +
+  geom_histogram(bins = 60, alpha = 0.85) +
   geom_vline(xintercept = mean(swc_samp_summer), linetype = "dashed", linewidth = 1.1) +
   geom_vline(xintercept = pop_mean_swc, linetype = "solid", linewidth = 1.1) +
   theme_classic(base_size = 18) +
@@ -575,7 +575,7 @@ tibble(boot_mean = boot_means_summer) %>%
 Explain the difference between **precision** and **accuracy** in this example.  
 What *kind* of error is summer-only sampling introducing?
 
-> *Write your answer here.*
+> *The bootstrap distribution of the mean for summer is fairly confident (narrow), however it is far from the population mean. This could mean the summer has little variation reflected in a narrow range of our samples and gives us a high precision for the mean. However, this does not mean this value is representative of the total swc, since it is only accounting the summer values. In fact, this means we introduced a sampling bias in our bootstrap. *
 
 ---
 
@@ -585,7 +585,7 @@ What *kind* of error is summer-only sampling introducing?
 
 This is one way to make your sample more representative when the population has strong seasonality.
 
-```{r ex3_stratified_sample, echo=TRUE, eval=FALSE}
+```{r ex3_stratified_sample, echo=TRUE, eval=T}
 set.seed(480)
 
 n_samp <- 240  # divisible by 12 makes this easy (20 per month)
@@ -593,9 +593,9 @@ k_per_month <- n_samp / 12
 
 # 1) Create a month-stratified sample from df
 df_strat <- df %>%
-  filter(!is.na(___)) %>%
-  group_by(___) %>%
-  slice_sample(n = ___) %>%
+  filter(!is.na(swc)) %>%
+  group_by(month) %>%
+  slice_sample(n = k_per_month) %>%
   ungroup()
 
 swc_samp_strat <- df_strat$swc
@@ -604,7 +604,7 @@ swc_samp_strat <- df_strat$swc
 df_strat %>% count(month)
 ```
 
-```{r ex3_strat_bootstrap, echo=TRUE, eval=FALSE}
+```{r ex3_strat_bootstrap, echo=TRUE, eval=T}
 set.seed(480)
 
 B <- 4000
@@ -621,12 +621,12 @@ tibble(
 )
 ```
 
-```{r ex3_plot_strat_boot, echo=TRUE, eval=FALSE}
+```{r ex3_plot_strat_boot, echo=TRUE, eval=T}
 # GOAL: Plot stratified bootstrap and compare to population mean.
 
 tibble(boot_mean = boot_means_strat) %>%
   ggplot(aes(x = boot_mean)) +
-  geom_histogram(bins = ___, alpha = 0.85) +
+  geom_histogram(bins = 40, alpha = 0.85) +
   geom_vline(xintercept = mean(swc_samp_strat), linetype = "dashed", linewidth = 1.1) +
   geom_vline(xintercept = pop_mean_swc, linetype = "solid", linewidth = 1.1) +
   theme_classic(base_size = 18) +
@@ -642,7 +642,7 @@ tibble(boot_mean = boot_means_strat) %>%
 Which sampling design is most accurate for the annual mean? Which looks most precise?  
 What does this teach you about bootstrap and study design?
 
-> *Write your answer here.*
+> *Both the random sample and monthly stratified bootstrap means were only 0.4 off from the population mean, whereas the summer-only bootstrap was off by >8. This means that both the random and stratified bootstraps were equally highest in accuracy and this may suggest there is not much seasonality in swc values. That being said, the summer-only bootstrap had the highest precision, despite it being highly biased. This showed how the bootstrap method can be used to quantify uncertainty of our sample, but it does not fix sample bias. *
 
 ---
 
