@@ -15,6 +15,8 @@ editor_options:
   chunk_output_type: console
 ---
 
+> GM GRADE 9.5/10 - Strong submission with excellent code execution, thoughtful writing, and good mechanistic insight in several places. Minor deductions for small conceptual/language slips (bootstrap purpose, precision/accuracy distinction, and one CI interpretation) and a couple of very small code issues.
+
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(lubridate)
@@ -292,6 +294,8 @@ Why does accuracy show “diminishing returns” as n increases?
 
 > *Using too small a sample size does drastically increase the relative error as shown in the figure. However as the number of samples increases, it better represents the underlying population. This improvement shows diminishing returns, which means there is less improvement in accuracy as the number of samples goes up. Practically, this means that choosing a small sample size is introduces much error, but after enough samples are chosen, choosing addiitonal samples improves the accuracy little. *
 
+> GM: Excellent description of the pattern and clear explanation of diminishing returns. Very well written.
+
 ---
 
 # Standard error and sampling distributions
@@ -421,6 +425,8 @@ What is the bootstrap trying to approximate? When is bootstrap especially useful
 
 > *The sampling distribution mean was 63.1 whereas the bootstrap distribution mean was 59.7. However, the population mean is 61.5, meaning both distribution means were slightly off. The bootstrap distribution mean is trying to approximate the mean distribution by quantifying uncertainty and estimating standard errors. This is especially useful in EAES when there are limited samples, or there is non-normal sampling distribution*
 
+> GM: -0.25 The bootstrap distribution is similar in shape to the sampling distribution. The bootstrap distribution approximates the sampling distribution of the mean when we only have one observed sample (the common situation in EAES field studies).
+
 ---
 
 # Part II — Bootstrap under random vs non-random sampling (SWC)
@@ -505,6 +511,8 @@ tibble(boot_mean = boot_means_random) %>%
 What does the bootstrap SD represent here?
 
 > *The bootstrap distribution is slightly below the population mean. The bootstrap SD represents the standard error of the sample mean, which represents the precision of our estimated mean given our sample. The sample mean is within the standard deviation of ~0.544 from the population mean, meaning it's a good estimate. *
+
+> GM: -0.25 The bootstrap distribution is centered near the **sample mean** (dashed line), not the population mean. The bootstrap SD estimates the standard error of the sample mean (uncertainty around the estimate given this sample).
 
 ---
 
@@ -644,6 +652,8 @@ What does this teach you about bootstrap and study design?
 
 > *Both the random sample and monthly stratified bootstrap means were only 0.4 off from the population mean, whereas the summer-only bootstrap was off by >8. This means that both the random and stratified bootstraps were equally highest in accuracy and this may suggest there is not much seasonality in swc values. That being said, the summer-only bootstrap had the highest precision, despite it being highly biased. This showed how the bootstrap method can be used to quantify uncertainty of our sample, but it does not fix sample bias. *
 
+> GM: Excellent comparison. Stratified sampling is most accurate for the annual mean because it accounts for seasonality. Bootstrap measures precision given the sample but cannot correct for bias in the sampling design itself.
+
 ---
 
 # Part II wrap-up
@@ -762,6 +772,8 @@ quantile(boot_coef[,2], probs = c(0.025, 0.975))  # slope CI
 ```
 
 **Prompt:The slope confidence interval is approximately -0.441 and -0.421, which does not include zero. This suggests that there is a statistically meaningful relationship between air temperature and soil water content, which makes sense. Since the relationship is negative, this means that as air temperature increases, soil water content tends to decrease. **
+
+> GM: Strong interpretation. The interval not including zero indicates a statistically meaningful negative relationship between air temperature and soil water content.
 
 Interpret the slope confidence interval.
 
